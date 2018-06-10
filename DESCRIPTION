@@ -1,0 +1,17 @@
+Package: openscoring
+Version: 0.1.0
+Date: 2018-06-10
+Type: Package
+License: AGPL-3
+Title: R client library for the Openscoring REST web service
+Description: This package provides R functions for 
+    the Openscoring REST web service (https://github.com/openscoring/openscoring),
+    which implements the true real-time scoring (< 1 ms) of R, Scikit-Learn and Apache Spark models.
+Author: Villu Ruusmann <villu.ruusmann@gmail.com>
+Maintainer: Villu Ruusmann <villu.ruusmann@gmail.com>
+URL: https://github.com/openscoring/openscoring-r
+LazyLoad: yes
+NeedsCompilation: no
+Depends:
+    httr,
+    methods
