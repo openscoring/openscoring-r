@@ -58,6 +58,24 @@ setMethod("evaluate",
 	}
 )
 
+setGeneric("evaluateCsvFile",
+	def = function(os, id, inpath, outpath){
+		standardGeneric("evaluateCsvFile")
+	}
+)
+setMethod("evaluateCsvFile",
+	signature = c("Openscoring", "character", "character", "character"),
+	definition = function(os, id, inpath, outpath){
+		tmpfile = tempfile(pattern = "openscoring", fileext = ".csv")
+		postResponse = POST(url = paste(model_url(os, id), "csv", sep = "/"), write_disk(tmpfile), body = upload_file(inpath, type = "text/plain"))
+		if(http_error(postResponse)){
+			return (parseContent("SimpleResponse", postResponse))
+		}
+		file.copy(tmpfile, outpath)
+		return (outpath)
+	}
+)
+
 setGeneric("undeploy",
 	def = function(os, id){
 		standardGeneric("undeploy")

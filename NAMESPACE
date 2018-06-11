@@ -1,4 +1,4 @@
-importFrom("httr", "content", "DELETE", "http_error", "POST", "PUT", "upload_file")
+importFrom("httr", "content", "DELETE", "http_error", "POST", "PUT", "upload_file", "write_disk")
 importFrom("methods", "new", "setClass", "setGeneric", "setMethod", "slot", "slotNames")
 
 exportPattern("^[^\\.]")

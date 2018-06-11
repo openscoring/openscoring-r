@@ -7,21 +7,21 @@ test_that("Openscoring is S4 object", {
 	expect_equal(os@base_url, "http://localhost:8080/openscoring")
 })
 
-modelResponse = deployFile(os, "Iris", "resources/DecisionTreeIris.pmml")
+deployResponse = deployFile(os, "Iris", "resources/DecisionTreeIris.pmml")
 
-test_that("ModelResponse is S4 object", {
-	expect_true(isS4(modelResponse))
-	expect_true(is(modelResponse, "SimpleResponse"))
-	expect_true(is(modelResponse, "ModelResponse"))
-	expect_equal(modelResponse@id, "Iris")
-	expect_equal(modelResponse@miningFunction, "classification")
-	expect_equal(modelResponse@summary, "Tree model")
-	expect_true(length(modelResponse@properties) > 0)
-	expect_equal(length(modelResponse@schema), 4)
-	expect_equal(length(modelResponse@schema$inputFields), 4)
-	expect_equal(length(modelResponse@schema$groupFields), 0)
-	expect_equal(length(modelResponse@schema$targetFields), 1)
-	expect_equal(length(modelResponse@schema$outputFields), 4)
+test_that("Deploy response is ModelResponse object", {
+	expect_true(isS4(deployResponse))
+	expect_true(is(deployResponse, "SimpleResponse"))
+	expect_true(is(deployResponse, "ModelResponse"))
+	expect_equal(deployResponse@id, "Iris")
+	expect_equal(deployResponse@miningFunction, "classification")
+	expect_equal(deployResponse@summary, "Tree model")
+	expect_true(length(deployResponse@properties) > 0)
+	expect_equal(length(deployResponse@schema), 4)
+	expect_equal(length(deployResponse@schema$inputFields), 4)
+	expect_equal(length(deployResponse@schema$groupFields), 0)
+	expect_equal(length(deployResponse@schema$targetFields), 1)
+	expect_equal(length(deployResponse@schema$outputFields), 4)
 })
 
 arguments = list(
@@ -33,7 +33,7 @@ arguments = list(
 
 result = evaluate(os, "Iris", arguments)
 
-test_that("Default evaluation response is list", {
+test_that("Simple evaluation response is list", {
 	expect_true(is(result, "list"))
 	expect_equal(length(result), 1 + 4)
 	expect_equal(result$Species, "setosa")
@@ -43,7 +43,7 @@ evaluationRequest = new("EvaluationRequest", id = "record-001", arguments = argu
 
 evaluationResponse = evaluate(os, "Iris", evaluationRequest)
 
-test_that("EvaluationResponse is S4 object", {
+test_that("Advanced evaluation response is EvaluationResponse object", {
 	expect_true(isS4(evaluationResponse))
 	expect_true(is(evaluationResponse, "SimpleResponse"))
 	expect_true(is(evaluationResponse, "EvaluationResponse"))
@@ -52,20 +52,46 @@ test_that("EvaluationResponse is S4 object", {
 	expect_equal(evaluationResponse@result$Species, "setosa")
 })
 
-test_that("Default evaluation response and EvaluationResponse contain the same prediction", {
+test_that("Simple evaluation and advanced evaluation contain the same prediction", {
 	expect_equal(evaluationResponse@result, result)
 })
 
-simpleResponse = undeploy(os, "Iris")
+evaluationResponse = evaluate(os, "Flower", evaluationRequest)
 
-test_that("SimpleResponse is empty S4 object", {
-	expect_true(isS4(simpleResponse))
-	expect_equal(simpleResponse@message, NA_character_)
+test_that("Failed advanced evaluation response is SimpleResponse object", {
+	expect_true(isS4(evaluationResponse))
+	expect_true(is(evaluationResponse, "SimpleResponse"))
+	expect_false(is(evaluationResponse, "EvaluationResponse"))
+	expect_equal(evaluationResponse@message, "Model \"Flower\" not found")
 })
 
-simpleResponse = undeploy(os, "Iris")
+tmpfile = tempfile(pattern = "test", fileext = ".csv")
 
-test_that("SimpleResponse is non-empty S4 object", {
-	expect_true(isS4(simpleResponse))
-	expect_equal(simpleResponse@message, "Model \"Iris\" not found")
+evaluationResponse = evaluateCsvFile(os, "Iris", "resources/input.csv", tmpfile)
+
+test_that("CSV evaluation response is path", {
+	expect_true(is(evaluationResponse, "character"))
+	expect_true(file.size(evaluationResponse) > 100)
+})
+
+evaluationResponse = evaluateCsvFile(os, "Flower", "resources/input.csv", tmpfile)
+
+test_that("Failed CSV evaluation response is SimpleResponse object", {
+	expect_true(isS4(evaluationResponse))
+	expect_true(is(evaluationResponse, "SimpleResponse"))
+	expect_equal(evaluationResponse@message, "Model \"Flower\" not found")
+})
+
+undeployResponse = undeploy(os, "Iris")
+
+test_that("Undeploy response is SimpleResponse object", {
+	expect_true(isS4(undeployResponse))
+	expect_equal(undeployResponse@message, NA_character_)
+})
+
+undeployResponse = undeploy(os, "Flower")
+
+test_that("Failed undeploy response is SimpleResponse object", {
+	expect_true(isS4(undeployResponse))
+	expect_equal(undeployResponse@message, "Model \"Flower\" not found")
 })

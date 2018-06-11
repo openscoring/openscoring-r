@@ -47,6 +47,11 @@ evaluationResponse = evaluate(os, "Iris", evaluationRequest)
 print(evaluationResponse@result)
 ```
 
+Evaluating the `Iris` model with data records from the `Iris.csv` CSV file, storing the results to the `Iris-results` CSV file:
+```R
+evaluateCsvFile(os, "Iris", "Iris.csv", "Iris-results.csv")
+```
+
 Undeploying the `Iris` model:
 ```R
 undeploy(os, "Iris")
