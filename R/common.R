@@ -12,7 +12,7 @@ as.list.SimpleRequest = function(x){
 	return (mapply(FUN = function(name){ slot(x, name) }, slotNames(x), SIMPLIFY = FALSE))
 }
 
-setClass("ModelResponse", contains = "SimpleRequest",
+setClass("ModelResponse", contains = "SimpleResponse",
 	slots = c(
 		id = "character",
 		miningFunction = "character",

@@ -15,3 +15,5 @@ NeedsCompilation: no
 Depends:
     httr,
     methods
+Suggests:
+    testthat
