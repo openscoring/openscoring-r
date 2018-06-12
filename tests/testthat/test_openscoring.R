@@ -65,6 +65,24 @@ test_that("Failed advanced evaluation response is SimpleResponse object", {
 	expect_equal(evaluationResponse@message, "Model \"Flower\" not found")
 })
 
+df = read.table(file = "resources/input.csv", header = TRUE, sep = ",")
+
+evaluationResponse = evaluateCsv(os, "Iris", df)
+
+test_that("CSV evaluation response is data.frame", {
+	expect_true(is(evaluationResponse, "data.frame"))
+	expect_equal(nrow(evaluationResponse), 3)
+	expect_equal(ncol(evaluationResponse), 1 + (1 + 4))
+})
+
+evaluationResponse = evaluateCsv(os, "Flower", df)
+
+test_that("Failed CSV evaluation response is SimpleResponse object", {
+	expect_true(isS4(evaluationResponse))
+	expect_true(is(evaluationResponse, "SimpleResponse"))
+	expect_equal(evaluationResponse@message, "Model \"Flower\" not found")
+})
+
 tmpfile = tempfile(pattern = "test", fileext = ".csv")
 
 evaluationResponse = evaluateCsvFile(os, "Iris", "resources/input.csv", tmpfile)

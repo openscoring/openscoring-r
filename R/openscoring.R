@@ -58,6 +58,28 @@ setMethod("evaluate",
 	}
 )
 
+setGeneric("evaluateCsv",
+	def = function(os, id, df){
+		standardGeneric("evaluateCsv")
+	}
+)
+setMethod("evaluateCsv",
+	signature = c("Openscoring", "character", "data.frame"),
+	definition = function(os, id, df){
+		inpath = tempfile(pattern = "input-", fileext = ".tsv")
+		outpath = tempfile(pattern = "output-", fileext = ".tsv")
+		write.table(df, file = inpath, quote = FALSE, sep = "\t", na = "N/A", row.names = FALSE, col.names = TRUE)
+		response = evaluateCsvFile(os, id = id, inpath = inpath, outpath = outpath)
+		if(isS4(response)){
+			return (response)
+		}
+		result = read.table(file = outpath, header = TRUE, sep = "\t", na.strings = "N/A", check.names = FALSE)
+		unlink(inpath)
+		unlink(outpath)
+		return (result)
+	}
+)
+
 setGeneric("evaluateCsvFile",
 	def = function(os, id, inpath, outpath){
 		standardGeneric("evaluateCsvFile")
@@ -66,12 +88,13 @@ setGeneric("evaluateCsvFile",
 setMethod("evaluateCsvFile",
 	signature = c("Openscoring", "character", "character", "character"),
 	definition = function(os, id, inpath, outpath){
-		tmpfile = tempfile(pattern = "openscoring", fileext = ".csv")
-		postResponse = POST(url = paste(model_url(os, id), "csv", sep = "/"), write_disk(tmpfile), body = upload_file(inpath, type = "text/plain"))
+		path = tempfile(pattern = "openscoring-", fileext = ".csv")
+		postResponse = POST(url = paste(model_url(os, id), "csv", sep = "/"), write_disk(path), body = upload_file(inpath, type = "text/plain"))
 		if(http_error(postResponse)){
 			return (parseContent("SimpleResponse", postResponse))
 		}
-		file.copy(tmpfile, outpath)
+		file.copy(path, outpath)
+		unlink(path)
 		return (outpath)
 	}
 )

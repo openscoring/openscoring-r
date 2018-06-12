@@ -1,6 +1,6 @@
 Package: openscoring
-Version: 0.2.0
-Date: 2018-06-10
+Version: 0.2.1
+Date: 2018-06-12
 Type: Package
 License: AGPL-3
 Title: R client library for the Openscoring REST web service

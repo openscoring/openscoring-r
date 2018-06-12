@@ -1,4 +1,5 @@
 importFrom("httr", "content", "DELETE", "http_error", "POST", "PUT", "upload_file", "write_disk")
 importFrom("methods", "new", "setClass", "setGeneric", "setMethod", "slot", "slotNames")
+importFrom("utils", "read.table", "write.table")
 
 exportPattern("^[^\\.]")
